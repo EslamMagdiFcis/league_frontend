@@ -61,9 +61,14 @@ import axios from 'axios';
             username: '',
             password: ''
         }
-        },
+    },
+    
+    created() {
+      this.refreshToken()  
+    },
+    
     methods:{
-        logIn:function(){
+        logIn(){
           let endPoint = 'http://127.0.0.1:8000/api/token/';
           let data = {'username': this.username ,'password': this.password}
             axios.post(endPoint, data)
@@ -72,7 +77,21 @@ import axios from 'axios';
                 localStorage.setItem('user', JSON.stringify(user_response));
                 this.$router.push({name:'teams'});
             });
-        }
+        },
+        refreshToken(){
+              let user = JSON.parse(localStorage.getItem('user'));
+              if(user){
+                let data = {'refresh': user.data.refresh}
+                let endPoint = 'http://127.0.0.1:8000/api/token/refresh/';
+                axios.post(endPoint, data)
+                .then(response=>{
+                  user.data.access = response.data.access
+                  localStorage.setItem('user', JSON.stringify(user));
+                  this.$router.push({name:'teams'});
+                });
+              }
+              
+            }
     }
   }
 </script>

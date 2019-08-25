@@ -42,6 +42,13 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
+                <!-- <router-link to='registration' exact> -->
+                  <!-- <v-btn> -->
+                    <!-- <v-icon>mdi-account-plus</v-icon> join now -->
+                  <!-- </v-btn> -->
+                <!-- </router-link> -->
+                <v-btn v-on:click='registration' color="primary"><v-icon>mdi-account-plus</v-icon> join now</v-btn>
+
                 <v-btn v-on:click='logIn' color="primary">Login</v-btn>
               </v-card-actions>
             </v-card>
@@ -91,7 +98,10 @@ import axios from 'axios';
                 });
               }
               
-            }
+        },
+        registration(){
+          this.$router.push({name:'registration'});
+        }
     }
   }
 </script>

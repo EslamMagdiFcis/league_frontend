@@ -141,7 +141,8 @@ import axios from 'axios';
       showCurrentPage: true,
       itemsPerPageOptions:[10],
       teams: [],
-      tmp_teams: {},
+      nameKeyteams: {},
+      idKeyteams: {},
       totalItems: 0,
       headers: [
         {
@@ -209,7 +210,7 @@ import axios from 'axios';
 
     },
 
-    created () {
+    mounted () {
       this.initialize()
       this.readTeamName()
       this.readTeamNameWithID()
@@ -222,7 +223,11 @@ import axios from 'axios';
       },
 
       getTeamID(teamName){
-        return this.tmp_teams[teamName]
+        return this.nameKeyteams[teamName]
+      },
+
+      getTeamName(teamID){
+        return this.idKeyteams[teamID]
       },
 
       readTeamNameWithID(){
@@ -231,7 +236,8 @@ import axios from 'axios';
         axios.get(endPoint, params)
         .then(response =>{
            for (let index in response.data.results) {
-             this.tmp_teams[response.data.results[index]['name']] = response.data.results[index]['id']
+             this.nameKeyteams[response.data.results[index]['name']] = response.data.results[index]['id']
+             this.idKeyteams[response.data.results[index]['id']] = response.data.results[index]['name']
              }
         });
       },
@@ -253,6 +259,10 @@ import axios from 'axios';
         let endPoint = 'http://127.0.0.1:8000/api/players/'
         axios.get(endPoint, params)
         .then(response =>{
+          response.data.results.forEach(player => {
+              player.position = this.getFullPostion(player.position)
+              player.team = this.getTeamName(player.team)
+            });
           this.items = response.data.results
           this.totalItems = response.data.count
           this.loading = false
@@ -289,7 +299,7 @@ import axios from 'axios';
         player.position = this.getShortPostion(player.position)
         player.team = this.getTeamID(player.team)
         let config = this.authConfig()
-        let endPoint = 'http://127.0.0.1:8000/api/players/create/'
+        let endPoint = 'http://127.0.0.1:8000/api/players/'
         axios.post(endPoint, player, config)
         .then(response => {
           if (response.name == player.name){
@@ -347,6 +357,22 @@ import axios from 'axios';
                             'Wide Winger': 'WW',
                             'Striker Forward': 'SF',
                             'Centre Forward': 'CF',
+                            }
+        return postions[position]
+      },
+
+      getFullPostion(position){
+        const postions = {  'GK': 'Goalkeeper',
+                            'FB': 'Full-Back',
+                            'WB': 'Wing-Back',
+                            'CD': 'Central Defender',
+                            'CC': 'Centre Back',
+                            'S': 'Sweeper',
+                            'CM': 'Central Midfield',
+                            'WM': 'Wide Midfield',
+                            'WW': 'Wide Winger',
+                            'SF': 'Striker Forward',
+                            'CF': 'Centre Forward',
                             }
         return postions[position]
       }

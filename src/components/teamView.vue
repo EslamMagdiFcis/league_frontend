@@ -180,7 +180,7 @@ import axios from 'axios';
 
       createTeam(team){
         let config = this.authConfig()
-        let endPoint = 'http://127.0.0.1:8000/api/teams/create/'
+        let endPoint = 'http://127.0.0.1:8000/api/teams/'
         axios.post(endPoint, team, config)
         .then(response => {
           if (response.name == team.name){

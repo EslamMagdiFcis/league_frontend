@@ -141,7 +141,8 @@ import axios from 'axios';
       showCurrentPage: true,
       itemsPerPageOptions:[10],
       teams: [],
-      tmp_teams: {},
+      nameKeyteams: {},
+      idKeyteams: {},
       totalItems: 0,
       headers: [
         {
@@ -205,7 +206,7 @@ import axios from 'axios';
 
     },
 
-    created () {
+    mounted () {
       this.initialize()
       this.readTeamName()
       this.readTeamNameWithID()
@@ -218,7 +219,11 @@ import axios from 'axios';
       },
 
       getTeamID(teamName){
-        return this.tmp_teams[teamName]
+        return this.nameKeyteams[teamName]
+      },
+
+      getTeamName(teamID){
+        return this.idKeyteams[teamID]
       },
 
       readTeamNameWithID(){
@@ -227,7 +232,8 @@ import axios from 'axios';
         axios.get(endPoint, params)
         .then(response =>{
            for (let index in response.data.results) {
-             this.tmp_teams[response.data.results[index]['name']] = response.data.results[index]['id']
+             this.nameKeyteams[response.data.results[index]['name']] = response.data.results[index]['id']
+             this.idKeyteams[response.data.results[index]['id']] = response.data.results[index]['name']
              }
         });
       },
@@ -249,6 +255,10 @@ import axios from 'axios';
         let endPoint = 'http://127.0.0.1:8000/api/trainers/'
         axios.get(endPoint, params)
         .then(response =>{
+          response.data.results.forEach(trainer => {
+            trainer.title = this.getFullTitle(trainer.title)
+            trainer.team = this.getTeamName(trainer.team)
+          });
           this.items = response.data.results
           this.totalItems = response.data.count
           this.loading = false
@@ -285,7 +295,7 @@ import axios from 'axios';
         trainer.title = this.getShortTitle(trainer.title)
         trainer.team = this.getTeamID(trainer.team)
         let config = this.authConfig()
-        let endPoint = 'http://127.0.0.1:8000/api/trainers/create/'
+        let endPoint = 'http://127.0.0.1:8000/api/trainers/'
         axios.post(endPoint, trainer, config)
         .then(response => {
           if (response.name == trainer.name){
@@ -334,6 +344,13 @@ import axios from 'axios';
       getShortTitle(title){
         const titles = {  'Manager': 'M',
                             'General Manager': 'GM',
+                          }
+        return titles[title]
+      },
+
+      getFullTitle(title){
+        const titles = {  'M': 'Manager',
+                          'GM': 'General Manager',
                           }
         return titles[title]
       }

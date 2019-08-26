@@ -469,7 +469,7 @@ import axios from 'axios';
         match.teamInfo.team = this.getTeamID(match.teamInfo.team)
         match.guestTeamInfo.team = this.getTeamID(match.guestTeamInfo.team)
 
-        let endPoint = 'http://127.0.0.1:8000/api/team-stats/create/'
+        let endPoint = 'http://127.0.0.1:8000/api/team-stats/'
         axios.post(endPoint, match.teamInfo, config)
         .then(response => {
           if(response.status == createdState){
@@ -480,7 +480,7 @@ import axios from 'axios';
               if(response.status == createdState){
                 match.guestTeamInfo.id = response.data.id
                 match.guest_team = response.data.id
-                endPoint = 'http://127.0.0.1:8000/api/matches/create/'
+                endPoint = 'http://127.0.0.1:8000/api/matches/'
                 axios.post(endPoint, match, config)
                 .then(response => {
                   if (response.status == createdState){
